@@ -102,6 +102,7 @@ class Client:
             url,
             json=data,
             timeout=self.timeout,
+            verify=False,
             **kwargs,
         )
         self._check_response(response)
