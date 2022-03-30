@@ -38,6 +38,7 @@ class Cuenta(Resource):
         return cuenta
 
     def _alta(self) -> None:
+        print(self.to_dict())
         self._client.put(self._endpoint, self.to_dict())
 
     @classmethod

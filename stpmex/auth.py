@@ -63,6 +63,8 @@ def join_fields(obj: 'Resource', fieldnames: List[str]) -> bytes:  # noqa: F821
         elif value is None:
             value = ''
         joined_fields.append(str(value))
+    print('cadena original')
+    print('||' + '|'.join(joined_fields) + '||')
     return '||' + '|'.join(joined_fields) + '||'
 
 
