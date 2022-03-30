@@ -1,12 +1,11 @@
 interactions:
 - request:
-    body: '{"cuenta": "646180157018613700", "rfcCurp": "SAHE800416HDFABC01", "nombre":
-      "EDUARDO MARCO", "apellidoPaterno": "SALVADOR", "apellidoMaterno": "HERNANDEZ
-      MUNOZ", "genero": "H", "fechaNacimiento": "19800414", "entidadFederativa": 1,
-      "actividadEconomica": 30, "calle": "MI CALLE", "numeroExterior": "2", "numeroInterior":
+    body: '{"cuenta": "646180157062755216", "rfcCurp": "SAHE800416HDFABC01", "nombre":
+      "EDUARDO MARCO", "apellidoPaterno": "SALVADOR", "paisNacimiento": 187, "fechaNacimiento":
+      "19800414", "apellidoMaterno": "HERNANDEZ MUNOZ", "genero": "H", "entidadFederativa":
+      1, "actividadEconomica": 30, "calle": "MI CALLE", "numeroExterior": "2", "numeroInterior":
       "1", "colonia": "MI COLONIA", "alcaldiaMunicipio": "MI ALCALDIA", "cp": "12345",
-      "pais": 1, "email": "asdasd@domain.com", "idIdentificacion": "123123123", "firma":
-      "j0aKfUr/ZpSz0WaFZc3aPjUuF3ZUpJWBKnALRqwGM0tlyAgMI5yaw2s6tbII4OiE4irJKeQqhniljzHdlVoyVCpMZOmFkV24AStayqVdNZ/hLtJDpcAxjwlBcwYM74oG5Qcl0+rBAY+UA7eRsLVtiVJzMy4/nxlt9+uoqoqchkk=",
+      "email": "asdasd@domain.com", "idIdentificacion": "123123123", "firma": "GqOged4nG/aGb2UocpaZZ7IHlMslbQLo0DxnQV/LB6OovEOW4R+bRWoqP6GQJsVmY6OGuSfZkpFD/VRhEwbQMRQ1Cvz7iU9gC1hBU+xMBXPDdRFkDiq02hw5fYfswSHdBibFPws+xdGMdLQ1CH5hp2Z+P/o+zVQWdz87ZlX0Fdo=",
       "empresa": "TAMIZI"}'
     headers:
       Accept:
@@ -16,23 +15,27 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '680'
+      - '692'
       Content-Type:
       - application/json
       User-Agent:
-      - stpmex-python/3.5.7
+      - stpmex-python/3.7.7
     method: PUT
     uri: https://demo.stpmex.com:7024/speiws/rest/cuentaModule/fisica
   response:
     body:
-      string: "{\"descripcion\":\"Cuenta en revisi\xF3n.\",\"id\":0}"
+      string: '{"descripcion":"Firma Invalida, cuenta: 646180157062755216","id":1}'
     headers:
       Content-Length:
-      - '45'
+      - '67'
       Content-Type:
       - application/json
       Date:
-      - Sat, 05 Sep 2020 19:37:48 GMT
+      - Wed, 30 Mar 2022 00:01:23 GMT
+      X-ORACLE-DMS-ECID:
+      - 6a11e314-d3e8-414b-ba9d-c8d672138c4e-000226f1
+      X-ORACLE-DMS-RID:
+      - '0'
     status:
       code: 200
       message: OK

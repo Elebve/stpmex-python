@@ -23,6 +23,7 @@ class Resource:
 
     @classmethod
     def _firma_consulta(cls, consulta: Dict[str, Any]):
+        breakpoint()
         joined = (
             f"|||"
             f"{cls.empresa}|"

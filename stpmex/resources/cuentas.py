@@ -8,6 +8,7 @@ from pydantic.dataclasses import dataclass
 
 from ..auth import CUENTA_FIELDNAMES
 from ..types import (
+    ActividadEconomica,
     Curp,
     EntidadFederativa,
     Genero,
@@ -94,3 +95,24 @@ class CuentaFisica(Cuenta):
     email: Optional[constr(max_length=150)] = None
     idIdentificacion: Optional[digits(max_length=20)] = None
     telefono: Optional[MxPhoneNumber] = None
+
+
+@dataclass
+class CuentaMoral(Cuenta):
+    _endpoint: ClassVar[str] = Cuenta._base_endpoint + '/moral'
+    _lote_endpoint: ClassVar[str] = Cuenta._base_endpoint + '/morales'
+
+    nombre: truncated_stp_str(50)
+    empresa_: truncated_stp_str(15)
+    pais: Pais
+    fechaConstitucion: dt.date
+    entidadFederativa: Optional[EntidadFederativa] = None
+    actividadEconomica: Optional[ActividadEconomica] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        data = super().to_dict()
+        # El método base `Resource.to_dict` agrega siempre el atributo empresa
+        # con el valor `de Resource.empresa`
+        data.pop('empresa_', None)
+        data['empresa'] = self.empresa_
+        return data
