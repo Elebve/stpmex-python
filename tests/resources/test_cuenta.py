@@ -48,13 +48,12 @@ def test_cuenta_nombre_apellidos_correctos(cuenta):
 def test_alta_cuenta_persona_moral(client):
     cuenta_moral_dict = dict(
         nombre='Tarjetas Cuenca',
-        empresa='Tarjetas Cuenca',
         cuenta='646180157095835268',
         pais=Pais.MX,
         fechaConstitucion=dt.date(2021, 1, 1),
         rfcCurp='TCU200828RX8',
-        entidadFederativa=EntidadFederativa.DF,
-        actividadEconomica=ActividadEconomica.FINTECH_WALLET,
+        # entidadFederativa=EntidadFederativa.DF,
+        # actividadEconomica=ActividadEconomica.FINTECH_WALLET,
     )
     cuenta = client.cuentas_morales.alta(**cuenta_moral_dict)
     assert cuenta

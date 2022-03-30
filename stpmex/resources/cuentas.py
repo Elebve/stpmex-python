@@ -104,16 +104,7 @@ class CuentaMoral(Cuenta):
     _lote_endpoint: ClassVar[str] = Cuenta._base_endpoint + '/morales'
 
     nombre: truncated_stp_str(50)
-    empresa: truncated_stp_str(15)
     pais: Pais
     fechaConstitucion: dt.date
     entidadFederativa: Optional[EntidadFederativa] = None
     actividadEconomica: Optional[ActividadEconomica] = None
-
-    # def to_dict(self) -> Dict[str, Any]:
-    #     data = super().to_dict()
-    #     # El método base `Resource.to_dict` agrega siempre el atributo empresa
-    #     # con el valor `de Resource.empresa`
-    #     # data.pop('empresa_', None)
-    #     data['empresa'] = self.empresa
-    #     return data
