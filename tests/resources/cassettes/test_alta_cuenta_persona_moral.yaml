@@ -1,9 +1,8 @@
 interactions:
 - request:
     body: '{"cuenta": "646180157095835268", "rfcCurp": "TCU200828RX8", "nombre": "TARJETAS
-      CUENCA", "pais": 187, "fechaConstitucion": "20210101", "entidadFederativa":
-      9, "actividadEconomica": 31, "firma": "bIrTVmIBaGhJwoDy+VoCDLYweRfpgA/XTMzYPSyFLR7Y9RUGiuu7EMRjmTj1kW/7jHCx8YoAvncMcMl5qHgqDLtEKep3lJE1T2A2QZ+hb/XnBMq8WZ+qs5cDtBbSFrJZPO3uuKajsWkQv9UgdjGQypPRe9srNiiu5Ba+yrUOdk4=",
-      "empresa": "TARJETAS CUENCA"}'
+      CUENCA", "empresa": "TARJETAS CUENCA", "pais": 187, "fechaConstitucion": "20210101",
+      "entidadFederativa": 9, "actividadEconomica": 31, "firma": "agMidUuE9qwuCeKCUTnOpquaeesIaCAt6haFVMjwO661BhaP7QPwjRfa5StXxFiuahrIhuSRs+ruFRGwmvU016zKicuTDQptOcV04VH3pMLYHd2BYE3c1cbm7WQ6IiX6gB4lATcZtHqf2410cIcktr1IIiGnxhub2K5o8PzbDUA="}'
     headers:
       Accept:
       - '*/*'
@@ -16,7 +15,7 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - stpmex-python/3.7.7
+      - stpmex-python/3.8.0.dev1
     method: PUT
     uri: https://demo.stpmex.com:7024/speiws/rest/cuentaModule/moral
   response:
@@ -28,9 +27,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 30 Mar 2022 00:36:32 GMT
+      - Wed, 30 Mar 2022 02:17:14 GMT
       X-ORACLE-DMS-ECID:
-      - 6a11e314-d3e8-414b-ba9d-c8d672138c4e-0002678d
+      - 6a11e314-d3e8-414b-ba9d-c8d672138c4e-00032243
       X-ORACLE-DMS-RID:
       - '0'
     status:
