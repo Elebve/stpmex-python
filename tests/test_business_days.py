@@ -3,8 +3,8 @@ import datetime as dt
 import pytest
 
 from stpmex.business_days import (
-    UTC_MINUS_5,
-    UTC_MINUS_6,
+    AMERICA_CANCUN,
+    AMERICA_MEXICO_CITY,
     current_cdmx_time_zone,
     get_next_business_day,
     get_prior_business_day,
@@ -89,18 +89,18 @@ def test_get_prior_working_day_holiday():
 @pytest.mark.parametrize(
     'test_date,expected_timezone',
     [
-        (dt.datetime(2022, 4, 2), UTC_MINUS_6),
-        (dt.datetime(2022, 4, 3), UTC_MINUS_5),
-        (dt.datetime(2022, 4, 8), UTC_MINUS_5),
-        (dt.datetime(2022, 10, 29), UTC_MINUS_5),
-        (dt.datetime(2022, 10, 30), UTC_MINUS_6),
-        (dt.datetime(2023, 1, 1), UTC_MINUS_6),
-        (dt.datetime(2023, 4, 1), UTC_MINUS_6),
-        (dt.datetime(2023, 4, 2), UTC_MINUS_5),
-        (dt.datetime(2023, 4, 3), UTC_MINUS_5),
-        (dt.datetime(2023, 10, 28), UTC_MINUS_5),
-        (dt.datetime(2023, 10, 29), UTC_MINUS_6),
-        (dt.datetime(2023, 12, 31), UTC_MINUS_6),
+        (dt.datetime(2022, 4, 2), AMERICA_MEXICO_CITY),
+        (dt.datetime(2022, 4, 3), AMERICA_CANCUN),
+        (dt.datetime(2022, 4, 8), AMERICA_CANCUN),
+        (dt.datetime(2022, 10, 29), AMERICA_CANCUN),
+        (dt.datetime(2022, 10, 30), AMERICA_MEXICO_CITY),
+        (dt.datetime(2023, 1, 1), AMERICA_MEXICO_CITY),
+        (dt.datetime(2023, 4, 1), AMERICA_MEXICO_CITY),
+        (dt.datetime(2023, 4, 2), AMERICA_CANCUN),
+        (dt.datetime(2023, 4, 3), AMERICA_CANCUN),
+        (dt.datetime(2023, 10, 28), AMERICA_CANCUN),
+        (dt.datetime(2023, 10, 29), AMERICA_MEXICO_CITY),
+        (dt.datetime(2023, 12, 31), AMERICA_MEXICO_CITY),
     ],
 )
 def test_current_cdmx_time_zone(test_date, expected_timezone):

@@ -4,9 +4,6 @@ from typing import Union
 
 from workalendar.america import Mexico
 
-# BEGIN_HOLY_WEEK = os.getenv('BEGIN_HOLY_WEEK', '2021-04-01')
-# END_HOLY_WEEK = os.getenv('END_HOLY_WEEK', '2021-04-02')
-
 # Day numbers taken from
 # https://docs.python.org/3.8/library/datetime.html#datetime.date.weekday
 MONDAY = 0
@@ -19,8 +16,8 @@ SUNDAY = 6
 
 WEEKEND = {SATURDAY, SUNDAY}
 
-UTC_MINUS_5 = 'UTC-5'
-UTC_MINUS_6 = 'UTC-6'
+AMERICA_MEXICO_CITY = 'America/Mexico_City'
+AMERICA_CANCUN = 'America/Cancun'
 
 # It is possible to calculate the exact days for holy week, but
 # it requires to integrate a astronomical calendar
@@ -77,7 +74,8 @@ def get_prior_business_day(fecha: Union[dt.datetime, dt.date]) -> dt.date:
     return business_day
 
 
-# based on http://www.dof.gob.mx/nota_detalle.php?codigo=4864678&fecha=04/01/1996
+# based on
+# http://www.dof.gob.mx/nota_detalle.php?codigo=4864678&fecha=04/01/1996
 def current_cdmx_time_zone(fecha: dt.datetime) -> str:
     april = dt.datetime(fecha.year, 4, 1)
     october = dt.datetime(fecha.year, 10, 31)
@@ -98,6 +96,6 @@ def current_cdmx_time_zone(fecha: dt.datetime) -> str:
             break
 
     if april_first_sunday <= fecha < octuber_last_sunday:
-        return UTC_MINUS_5
+        return AMERICA_CANCUN
     else:
-        return UTC_MINUS_6
+        return AMERICA_MEXICO_CITY
