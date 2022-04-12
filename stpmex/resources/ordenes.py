@@ -228,6 +228,3 @@ class Orden(Resource):
                 v = v.rstrip()
             sanitized[k] = v
         return make_dataclass('OrdenConsultada', sanitized.keys())(**sanitized)
-
-
-class OrdenV2(Orden)
