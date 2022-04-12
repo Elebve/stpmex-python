@@ -29,7 +29,7 @@ from .exc import (
 from .resources import CuentaFisica, CuentaMoral, Orden, Resource, Saldo
 from .version import __version__ as client_version
 
-DEMO_HOST = 'https://demo.stpmex.com:7024'
+DEMO_HOST = 'https://efws-dev.stpmex.com'
 PROD_HOST = 'https://prod.stpmex.com'
 
 
@@ -63,7 +63,7 @@ class Client:
         else:
             host_url = PROD_HOST
             self.session.verify = True
-        self.base_url = base_url or f'{host_url}/speiws/rest'
+        self.base_url = base_url or f'{host_url}/efws/API'
         self.soap_url = (
             soap_url or f'{host_url}/spei/webservices/SpeiConsultaServices'
         )

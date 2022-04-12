@@ -38,7 +38,7 @@ class Orden(Resource):
     https://stpmex.zendesk.com/hc/es/articles/360002682851-RegistraOrden-Dispersi%C3%B3n-
     """
 
-    _endpoint: ClassVar[str] = '/ordenPago'
+    _endpoint: ClassVar[str] = '/consultaOrden'
     _firma_fieldnames: ClassVar[List[str]] = ORDEN_FIELDNAMES
 
     monto: StrictPositiveFloat
@@ -181,13 +181,14 @@ class Orden(Resource):
         consulta = dict(
             empresa=cls.empresa,
             claveRastreo=claveRastreo,
-            institucionOperante=institucionOperante,
+            # institucionOperante=institucionOperante,
         )
         if fechaOperacion:
             consulta['fechaOperacion'] = strftime(fechaOperacion)
         consulta['firma'] = cls._firma_consulta(consulta)
         resp = cls._client.post(endpoint, consulta)['ordenPago']
         return cls._sanitize_consulta(resp)
+
 
     @classmethod
     def _consulta_clave_rastreo_recibida(
@@ -227,3 +228,6 @@ class Orden(Resource):
                 v = v.rstrip()
             sanitized[k] = v
         return make_dataclass('OrdenConsultada', sanitized.keys())(**sanitized)
+
+
+class OrdenV2(Orden)
