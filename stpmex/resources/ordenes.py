@@ -177,7 +177,7 @@ class Orden(Resource):
         institucionOperante: int,
         fechaOperacion: Optional[dt.date] = None,
     ) -> 'OrdenConsultada':  # noqa: F821
-        endpoint = cls._endpoint + '/consOrdEnvRastreo'
+        endpoint = cls._endpoint
         consulta = dict(
             empresa=cls.empresa,
             claveRastreo=claveRastreo,
