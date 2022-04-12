@@ -186,7 +186,7 @@ class Orden(Resource):
         if fechaOperacion:
             consulta['fechaOperacion'] = strftime(fechaOperacion)
         consulta['firma'] = cls._firma_consulta(consulta)
-        resp = cls._client.post(endpoint, consulta)['ordenPago']
+        resp = cls._client.post(endpoint, consulta)
         return cls._sanitize_consulta(resp)
 
 
