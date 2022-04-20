@@ -38,9 +38,10 @@ def get_next_business_day(fecha: Union[dt.datetime, dt.date]) -> dt.date:
     Obtains the next business day in case the current one is not.
     """
     try:
+        # based on
+        # https://stpmex.zendesk.com/hc/es/articles/360045884491-Fecha-de-Operaci%C3%B3n
         assert fecha.hour >= 18
-        fecha.replace(hour=0, minute=0, second=0)
-        fecha = fecha + dt.timedelta(days=1)
+        fecha = fecha.date() + dt.timedelta(days=1)
     except (AssertionError, AttributeError):
         ...
 
