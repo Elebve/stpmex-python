@@ -58,7 +58,7 @@ class Orden(Resource):
     tipoCuentaOrdenante: TipoCuenta = TipoCuenta.clabe.value
 
     claveRastreo: truncated_str(29) = field(
-        default_factory=lambda: f'CR{int(time.time())}'
+        default_factory=lambda: f'ATRIA{int(time.time())}'
     )
     referenciaNumerica: conint(gt=0, lt=10 ** 7) = field(
         default_factory=lambda: random.randint(10 ** 6, 10 ** 7)
