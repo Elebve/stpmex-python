@@ -19,6 +19,7 @@ from .exc import (
     InvalidRfcOrCurp,
     InvalidTrackingKey,
     MandatoryField,
+    NoEntityFound,
     NoOrdenesEncontradas,
     NoServiceResponse,
     PldRejected,
@@ -53,16 +54,16 @@ class Client:
         base_url: str = None,
         soap_url: str = None,
         timeout: tuple = None,
+        verify: Union[bool, str] = True,
     ):
         self.timeout = timeout
         self.session = Session()
+        self.session.verify = verify
         self.session.headers['User-Agent'] = f'stpmex-python/{client_version}'
         if demo:
             host_url = DEMO_HOST
-            self.session.verify = False
         else:
             host_url = PROD_HOST
-            self.session.verify = True
         self.base_url = base_url or f'{host_url}/speiws/rest'
         self.soap_url = (
             soap_url or f'{host_url}/spei/webservices/SpeiConsultaServices'
@@ -139,6 +140,8 @@ def _raise_description_error_exc(resp: Dict) -> NoReturn:
         raise SignatureValidationError(**resp['resultado'])
     elif id == 0 and re.match(r'El campo .+ es obligatorio', error):
         raise MandatoryField(**resp['resultado'])
+    elif id == 0 and 'No entity found for query' in error:
+        raise NoEntityFound(**resp['resultado'])
     elif id == -1 and re.match(
         r'La clave de rastreo .+ ya fue utilizada', error
     ):
