@@ -5,7 +5,7 @@ from typing import List
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.hashes import SHA256
-
+import logging
 CUENTA_FIELDNAMES = """
     empresa
     cuenta
@@ -63,7 +63,9 @@ def join_fields(obj: 'Resource', fieldnames: List[str]) -> bytes:  # noqa: F821
         elif value is None:
             value = ''
         joined_fields.append(str(value))
-    return '||' + '|'.join(joined_fields) + '||'
+    output = '||' + '|'.join(joined_fields) + '||'
+    logging.debug(f'join_fields output {output}')
+    return output
 
 
 def compute_signature(pkey: RSAPrivateKey, text: str) -> str:
