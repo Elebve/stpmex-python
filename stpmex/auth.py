@@ -5,6 +5,20 @@ from typing import List
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.hashes import SHA256
+
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.certificates import CertificateClient
+from azure.keyvault.keys import KeyClient
+from azure.keyvault.keys.crypto import (CryptographyClient,
+                                        EncryptionAlgorithm,
+                                        SignatureAlgorithm)
+from azure.keyvault.secrets import SecretClient
+import hashlib
+import base64
+import os
+VAULT_URL = os.environ.get('VAULT_URL')
+STP_KEY = os.environ.get('STP_KEY')
+
 import logging
 CUENTA_FIELDNAMES = """
     empresa
@@ -69,9 +83,25 @@ def join_fields(obj: 'Resource', fieldnames: List[str]) -> bytes:  # noqa: F821
 
 
 def compute_signature(pkey: RSAPrivateKey, text: str) -> str:
-    signature = pkey.sign(
-        text.encode('utf-8'),
-        padding.PKCS1v15(),
-        SHA256(),
-    )
-    return b64encode(signature).decode('ascii')
+    
+    credential = DefaultAzureCredential()
+    key_client = KeyClient(
+        vault_url=VAULT_URL,
+        credential=credential
+        )
+    key = key_client.get_key(STP_KEY)
+    crypto_client = CryptographyClient(key, credential=credential)
+    sha = hashlib.sha256(text.encode())
+    digest = sha.digest()
+    result = crypto_client.sign(SignatureAlgorithm.rs256, digest)
+    digestValue = sha.hexdigest()
+    signatureValue = result.signature
+    signature_text = str(base64.b64encode(signatureValue).decode())
+    return signature_text 
+            
+    # signature = pkey.sign(
+    #     text.encode('utf-8'),
+    #     padding.PKCS1v15(),
+    #     SHA256(),
+    # )
+    # return b64encode(signature).decode('ascii')
