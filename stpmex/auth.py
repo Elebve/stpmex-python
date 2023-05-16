@@ -82,8 +82,7 @@ def join_fields(obj: 'Resource', fieldnames: List[str]) -> bytes:  # noqa: F821
     return output
 
 
-def compute_signature(pkey: RSAPrivateKey, text: str) -> str:
-    
+def compute_signature(text: str) -> str:
     credential = DefaultAzureCredential()
     key_client = KeyClient(
         vault_url=VAULT_URL,
