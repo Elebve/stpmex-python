@@ -42,8 +42,6 @@ from stpmex.types import Pais
 
 client = Client(
     empresa='TU_EMPRESA',
-    priv_key='PKEY_CONTENIDO',
-    priv_key_passphrase='supersecret',
 )
 
 cuenta_persona_fisica = client.cuentas.alta(
