@@ -19,7 +19,7 @@ class Resource:
         https://stpmex.zendesk.com/hc/es/articles/360002796012-Firmas-Electr%C3%B3nicas-
         """
         joined_fields = join_fields(self, self._firma_fieldnames)
-        return compute_signature(joined_fields)
+        return compute_signature(self._client.STP_KEY, joined_fields)
 
     @classmethod
     def _firma_consulta(cls, consulta: Dict[str, Any]):
