@@ -48,7 +48,7 @@ class Client:
     def __init__(
         self,
         empresa: str,
-        STP_KEY: str = os.environment('STP_KEY'),
+        STP_KEY: str = os.environ('STP_KEY'),
         demo: bool = False,
         base_url: str = None,
         soap_url: str = None,
