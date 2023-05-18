@@ -48,8 +48,6 @@ class Client:
     def __init__(
         self,
         empresa: str,
-        priv_key: str,
-        priv_key_passphrase: str,
         demo: bool = False,
         base_url: str = None,
         soap_url: str = None,
@@ -69,14 +67,7 @@ class Client:
             soap_url or f'{host_url}/spei/webservices/SpeiConsultaServices'
         )
 
-        try:
-            self.pkey = serialization.load_pem_private_key(
-                priv_key.encode('utf-8'),
-                priv_key_passphrase.encode('ascii'),
-                default_backend(),
-            )
-        except (ValueError, TypeError, UnsupportedAlgorithm):
-            raise InvalidPassphrase
+        
         Resource.empresa = empresa
         Resource._client = self
 

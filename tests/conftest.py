@@ -34,18 +34,18 @@ uzF/x9tl2+BdiDjPOhSRuoa1ypilODdpOGKNKuf0vu2jAbbzDILBYOfw
 @pytest.fixture
 def client():
     empresa = 'TAMIZI'
-    pkey_passphrase = '12345678'
-    yield Client(empresa, PKEY, pkey_passphrase, demo=True)
+    STP_KEY_passphrase = '12345678'
+    yield Client(empresa, PKEY, STP_KEY_passphrase, demo=True)
 
 
 @pytest.fixture
 def client_mock(request):
     empresa = 'TAMIZI'
-    pkey_passphrase = '12345678'
+    STP_KEY_passphrase = '12345678'
 
     with requests_mock.mock() as m:
         m.put(requests_mock.ANY, json=request.param)
-        yield Client(empresa, PKEY, pkey_passphrase, demo=True)
+        yield Client(empresa, PKEY, STP_KEY_passphrase, demo=True)
 
 
 @pytest.fixture
