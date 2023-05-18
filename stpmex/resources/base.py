@@ -31,7 +31,7 @@ class Resource:
             f"{consulta.get('institucionOperante', '')}"
             f"||||||||||||||||||||||||||||||"
         )
-        return compute_signature(cls._client.STP_KEY, joined)
+        return compute_signature(joined)
 
     def to_dict(self) -> Dict[str, Any]:
         base = dict()
