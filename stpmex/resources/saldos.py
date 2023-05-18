@@ -36,7 +36,7 @@ class Saldo(Resource):
         https://stpmex.zendesk.com/hc/es/articles/360002812571-consultaSaldoCuenta
         """
         client = cls._client
-        firma = compute_signature(client.STP_KEY, cuenta)
+        firma = compute_signature(cuenta)
         data = f'''
 <soapenv:Envelope
         xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"

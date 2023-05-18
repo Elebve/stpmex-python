@@ -27,5 +27,5 @@ def test_compute_signature(client, orden):
         'DJ6vlXuYM40+uNw0tMc0y8Dv26uO8Vv2GhOhMqaGk72LwgwgmqVg17xzjgGbJHzAzMav3'
         'fx4/3No+mSnf7vxpe4ePf6yK1yU5U28L4='
     )
-    sig = compute_signature(client.STP_KEY, join_fields(orden, ORDEN_FIELDNAMES))
+    sig = compute_signature(join_fields(orden, ORDEN_FIELDNAMES))
     assert sig == firma
