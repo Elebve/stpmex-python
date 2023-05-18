@@ -96,7 +96,7 @@ def compute_signature(STP_KEY: str, text: str) -> str:
     digestValue = sha.hexdigest()
     signatureValue = result.signature
     signature_text = str(base64.b64encode(signatureValue).decode())
-    return signature_text 
+    return signature_text
             
     # signature = pkey.sign(
     #     text.encode('utf-8'),
