@@ -67,6 +67,7 @@ class Client:
         self.soap_url = (
             soap_url or f'{host_url}/spei/webservices/SpeiConsultaServices'
         )
+        logging.debug(f'stpmex Client STP_KEY {STP_KEY}')
         self.STP_KEY = STP_KEY
         Resource.empresa = empresa
         Resource._client = self
