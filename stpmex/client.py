@@ -67,7 +67,7 @@ class Client:
         self.soap_url = (
             soap_url or f'{host_url}/spei/webservices/SpeiConsultaServices'
         )
-
+        self.STP_KEY = STP_KEY
         Resource.empresa = empresa
         Resource._client = self
 
