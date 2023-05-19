@@ -1,3 +1,4 @@
+import logging
 from base64 import b64encode
 from enum import Enum
 from typing import List
@@ -19,7 +20,6 @@ import os
 VAULT_URL = os.environ.get('VAULT_URL')
 
 
-import logging
 CUENTA_FIELDNAMES = """
     empresa
     cuenta
@@ -82,12 +82,12 @@ def join_fields(obj: 'Resource', fieldnames: List[str]) -> bytes:  # noqa: F821
     return output
 
 
-def compute_signature(STP_KEY=os.environ.get('STP_KEY'), text: str) -> str:
+def compute_signature(text: str, STP_KEY=os.environ.get('STP_KEY')) -> str:
     credential = DefaultAzureCredential()
     key_client = KeyClient(
         vault_url=VAULT_URL,
         credential=credential
-        )
+    )
     key = key_client.get_key(STP_KEY)
     crypto_client = CryptographyClient(key, credential=credential)
     sha = hashlib.sha256(text.encode())
@@ -96,8 +96,8 @@ def compute_signature(STP_KEY=os.environ.get('STP_KEY'), text: str) -> str:
     digestValue = sha.hexdigest()
     signatureValue = result.signature
     signature_text = str(base64.b64encode(signatureValue).decode())
-    return signature_text 
-            
+    return signature_text
+
     # signature = pkey.sign(
     #     text.encode('utf-8'),
     #     padding.PKCS1v15(),
