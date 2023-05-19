@@ -17,7 +17,7 @@ import hashlib
 import base64
 import os
 VAULT_URL = os.environ.get('VAULT_URL')
-STP_KEY = os.environ.get('STP_KEY')
+
 
 import logging
 CUENTA_FIELDNAMES = """
@@ -82,7 +82,7 @@ def join_fields(obj: 'Resource', fieldnames: List[str]) -> bytes:  # noqa: F821
     return output
 
 
-def compute_signature(text: str) -> str:
+def compute_signature(STP_KEY=os.environ.get('STP_KEY'), text: str) -> str:
     credential = DefaultAzureCredential()
     key_client = KeyClient(
         vault_url=VAULT_URL,
