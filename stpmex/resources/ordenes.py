@@ -11,7 +11,7 @@ from cuenca_validations.types import (
     StrictPositiveFloat,
     digits,
 )
-from pydantic import conint, constr, validator
+from pydantic import conint, constr, validator, confloat
 from pydantic.dataclasses import dataclass
 
 from ..auth import ORDEN_FIELDNAMES
@@ -71,6 +71,9 @@ class Orden(Resource):
     tipoPago: int = 1
     topologia: str = 'T'
     iva: Optional[float] = None
+    
+    latitud: Optional[confloat(ge=-90.0, le=90.0)] = None
+    longitud: Optional[confloat(ge=-180.0, le=180.0)] = None
 
     id: Optional[int] = None
 
