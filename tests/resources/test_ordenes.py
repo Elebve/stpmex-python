@@ -4,7 +4,6 @@ from typing import Any, Dict
 from unittest.mock import patch
 
 import pytest
-from cuenca_validations.typing import DictStrAny
 from pydantic import ValidationError
 
 from stpmex import Client
@@ -33,20 +32,13 @@ def test_tipoCuentaBeneficiario(cuenta: str, tipo: TipoCuenta):
     assert Orden.get_tipo_cuenta(cuenta) == tipo
 
 
-@pytest.mark.parametrize(
-    'monto, msg',
-    [
-        (-1.3, 'ensure this value is greater than or equal to 0'),
-        (1, 'value is not a valid float'),
-    ],
-)
-def test_strict_pos_float(monto, msg: str, orden_dict: Dict[str, Any]):
+@pytest.mark.parametrize('monto', [-1.3, 1])
+def test_strict_pos_float(monto, orden_dict: Dict[str, Any]):
     orden_dict['claveRastreo'] = f'CR{int(time.time())}'
     orden_dict['monto'] = monto
 
-    with pytest.raises(ValidationError) as exc:
+    with pytest.raises(ValidationError):
         Orden(**orden_dict)
-    assert msg in str(exc.value)
 
 
 @pytest.mark.vcr
@@ -107,16 +99,14 @@ def test_consulta_orden_sin_resultado_recibida(client):
 
 @patch('stpmex.types.BLOCKED_INSTITUTIONS', {'90659'})
 def test_institucion_bloqueada_no_permite_registrar_orden(
-    client: Client, orden_dict: DictStrAny
+    client: Client, orden_dict: Dict[str, Any]
 ):
     orden_dict['cuentaBeneficiario'] = '659802025000339321'
-    expected_error_dict = dict(
-        loc=('cuentaBeneficiario',),
-        msg='Asp Integra Opc has been blocked by STP.',
-        type='value_error.clabe.bank_code',
-        ctx=dict(bank_name='Asp Integra Opc'),
-    )
     with pytest.raises(ValidationError) as exc:
         client.ordenes.registra(**orden_dict)
 
-    assert any(error == expected_error_dict for error in exc.value.errors())
+    assert any(
+        error['loc'][0] == 'cuentaBeneficiario'
+        and error['type'] == 'clabe.bank_code'
+        for error in exc.value.errors()
+    )

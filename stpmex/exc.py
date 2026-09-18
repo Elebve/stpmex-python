@@ -1,6 +1,3 @@
-from pydantic import PydanticValueError
-
-
 class StpmexException(Exception):
     def __init__(self, **kwargs):
         for attr, value in kwargs.items():
@@ -89,13 +86,6 @@ class AccountDoesNotExist(StpmexException):
 
 class InvalidAmount(StpmexException):
     """El monto es inválido para una de las instituciones"""
-
-
-class BlockedInstitutionError(PydanticValueError):
-    """Institución bloqueada"""
-
-    code = 'clabe.bank_code'
-    msg_template = '{bank_name} has been blocked by STP.'
 
 
 class NoEntityFound(StpmexException):

@@ -2,17 +2,14 @@ import datetime as dt
 import random
 import time
 from dataclasses import field, make_dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Annotated, Any, ClassVar, Dict, List, Optional, Union
 
 import clabe
 from clabe.types import Clabe
-from cuenca_validations.types import (
-    PaymentCardNumber,
-    StrictPositiveFloat,
-    digits,
-)
-from pydantic import confloat, conint, constr, validator
+from cuenca_validations.types import digits
+from pydantic import Field, confloat, field_validator
 from pydantic.dataclasses import dataclass
+from pydantic_extra_types.payment import PaymentCardNumber
 
 from ..auth import ORDEN_FIELDNAMES
 from ..banks import resolve_institucion
@@ -22,6 +19,7 @@ from ..types import (
     Estado,
     MxPhoneNumber,
     Prioridad,
+    StrictPositiveFloat,
     TipoCuenta,
     TipoOperacion,
     truncated_str,
@@ -53,7 +51,7 @@ class Orden(Resource):
 
     cuentaOrdenante: Clabe
     nombreOrdenante: Optional[truncated_str(39)] = None
-    institucionOperante: digits(5, 5) = STP_BANK_CODE
+    institucionOperante: digits(5, 5) = str(STP_BANK_CODE)
 
     tipoCuentaBeneficiario: Optional[TipoCuenta] = None
     tipoCuentaOrdenante: TipoCuenta = TipoCuenta.clabe.value
@@ -61,11 +59,11 @@ class Orden(Resource):
     claveRastreo: truncated_str(29) = field(
         default_factory=lambda: f'ATRIA{int(time.time())}'
     )
-    referenciaNumerica: conint(gt=0, lt=10 ** 7) = field(
+    referenciaNumerica: Annotated[int, Field(gt=0, lt=10 ** 7)] = field(
         default_factory=lambda: random.randint(10 ** 6, 10 ** 7)
     )
-    rfcCurpBeneficiario: constr(max_length=18) = 'ND'
-    rfcCurpOrdenante: Optional[constr(max_length=18)] = None
+    rfcCurpBeneficiario: Annotated[str, Field(max_length=18)] = 'ND'
+    rfcCurpOrdenante: Optional[Annotated[str, Field(max_length=18)]] = None
 
     prioridad: int = Prioridad.normal.value
     medioEntrega: int = 3
@@ -103,7 +101,8 @@ class Orden(Resource):
             tipo = None
         return tipo
 
-    @validator('institucionContraparte')
+    @field_validator('institucionContraparte')
+    @classmethod
     def _validate_institucion(cls, v: str) -> str:
         v = resolve_institucion(v)
         if v not in clabe.BANKS.values():

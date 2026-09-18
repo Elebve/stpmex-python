@@ -1,27 +1,43 @@
 import re
 import unicodedata
 from enum import Enum
-from typing import TYPE_CHECKING, ClassVar, Type
+from typing import Annotated, Any
 
 from clabe import Clabe
-from cuenca_validations.validators import validate_digits
-from pydantic import ConstrainedStr, StrictStr
-from pydantic.validators import (
-    constr_length_validator,
-    constr_strip_whitespace,
-    str_validator,
-)
-
-from stpmex.banks import sync_clabe_catalog
-from stpmex.exc import BlockedInstitutionError
-
-sync_clabe_catalog()
-
-if TYPE_CHECKING:
-    from pydantic.typing import CallableGenerator
+from pydantic import AfterValidator, BeforeValidator, StringConstraints
+from pydantic_core import PydanticCustomError
 
 # STP does not allow to make tranfers to this banks codes.
 BLOCKED_INSTITUTIONS = {'90642'}
+
+
+def _strict_positive_float(value: Any) -> float:
+    if type(value) is not float:
+        raise ValueError('value is not a valid float')
+    if value <= 0:
+        raise ValueError('ensure this value is greater than 0')
+    return value
+
+
+StrictPositiveFloat = Annotated[float, BeforeValidator(_strict_positive_float)]
+MxPhoneNumber = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=10,
+        max_length=10,
+        pattern=r'^\d+$',
+    ),
+]
+Curp = Annotated[
+    str,
+    StringConstraints(
+        min_length=18,
+        max_length=18,
+        pattern=r'^[A-Z]{4}[0-9]{6}[A-Z]{6}[A-Z0-9][0-9]$',
+    ),
+]
+Rfc = Annotated[str, StringConstraints(min_length=12, max_length=13)]
 
 
 def unicode_to_ascii(unicode: str) -> str:
@@ -29,53 +45,43 @@ def unicode_to_ascii(unicode: str) -> str:
     return v.decode('ascii')
 
 
-class AsciiStr(ConstrainedStr):
-    @classmethod
-    def __get_validators__(cls) -> 'CallableGenerator':
-        yield unicode_to_ascii
-        yield from super().__get_validators__()
-        yield lambda value: value.strip()
+def truncated_str(length: int) -> Any:
+    def _parse(value: str) -> str:
+        value = unicode_to_ascii(value).strip()
+        if len(value) < 1:
+            raise ValueError('ensure this value has at least 1 characters')
+        return value[:length].strip()
+
+    return Annotated[str, AfterValidator(_parse)]
 
 
-class StpStr(AsciiStr):
+def truncated_stp_str(length: int) -> Any:
     """
     based on:
     https://stpmex.zendesk.com/hc/es/articles/360038242071-Registro-de-Cuentas-de-Personas-f%C3%ADsicas
     """
 
-    @classmethod
-    def validate(cls, value: str) -> str:
-        value = super().validate(value)
-        value = re.sub(r'[-,.]', ' ', value)
-        value = value.upper()
-        return value
+    def _parse(value: str) -> str:
+        value = unicode_to_ascii(value).strip()
+        value = re.sub(r'[-,.]', ' ', value).upper()
+        if len(value) < 1:
+            raise ValueError('ensure this value has at least 1 characters')
+        return value[:length].strip()
+
+    return Annotated[str, AfterValidator(_parse)]
 
 
 class BeneficiarioClabe(Clabe):
     @classmethod
-    def __get_validators__(cls) -> 'CallableGenerator':
-        yield from Clabe.__get_validators__()
-        yield cls.validate_blocked_institution
-
-    @classmethod
-    def validate_blocked_institution(cls, clabe: Clabe) -> Clabe:
-        if clabe.bank_code_banxico in BLOCKED_INSTITUTIONS:
-            raise BlockedInstitutionError(bank_name=clabe.bank_name)
-        return clabe
-
-
-def truncated_str(length: int) -> Type[str]:
-    namespace = dict(
-        strip_whitespace=True, min_length=1, curtail_length=length
-    )
-    return type('TruncatedStrValue', (AsciiStr,), namespace)
-
-
-def truncated_stp_str(length: int) -> Type[str]:
-    namespace = dict(
-        strip_whitespace=True, min_length=1, curtail_length=length
-    )
-    return type('TruncatedStpStrValue', (StpStr,), namespace)
+    def _validate(cls, clabe: str) -> 'BeneficiarioClabe':
+        validated = super()._validate(clabe)
+        if validated.bank_code_banxico in BLOCKED_INSTITUTIONS:
+            raise PydanticCustomError(
+                'clabe.bank_code',
+                '{bank_name} has been blocked by STP.',
+                dict(bank_name=validated.bank_name),
+            )
+        return cls(str(validated))
 
 
 class Estado(str, Enum):
@@ -132,17 +138,6 @@ class TipoCuenta(int, Enum):
 class Genero(str, Enum):
     mujer = 'M'
     hombre = 'H'
-
-
-class Curp(StrictStr):
-    min_length = 18
-    max_length = 18
-    regex = re.compile(r'^[A-Z]{4}[0-9]{6}[A-Z]{6}[A-Z|0-9][0-9]$')
-
-
-class Rfc(StrictStr):
-    min_length = 12
-    max_length = 13
 
 
 class EntidadFederativa(int, Enum):
@@ -481,16 +476,3 @@ class ActividadEconomica(int, Enum):
 class TipoOperacion(str, Enum):
     enviada = 'E'
     recibida = 'R'
-
-
-class MxPhoneNumber(str):
-    strip_whitespace: ClassVar[bool] = True
-    min_length: ClassVar[int] = 10
-    max_length: ClassVar[int] = 10
-
-    @classmethod
-    def __get_validators__(cls) -> 'CallableGenerator':
-        yield str_validator
-        yield constr_strip_whitespace
-        yield constr_length_validator
-        yield validate_digits

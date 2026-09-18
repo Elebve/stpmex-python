@@ -1,9 +1,9 @@
 import datetime as dt
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Annotated, Any, ClassVar, Dict, List, Optional, Union
 
 from clabe.types import Clabe
 from cuenca_validations.types import digits
-from pydantic import conint, constr
+from pydantic import Field, constr
 from pydantic.dataclasses import dataclass
 
 from ..auth import CUENTA_FIELDNAMES
@@ -87,7 +87,7 @@ class CuentaFisica(Cuenta):
     genero: Optional[Genero] = None
     # Esperando a que STP agregue Nacido en el Extranjero
     entidadFederativa: Optional[EntidadFederativa] = None
-    actividadEconomica: Optional[conint(ge=28, le=74)] = None
+    actividadEconomica: Optional[Annotated[int, Field(ge=28, le=74)]] = None
     calle: Optional[truncated_stp_str(60)] = None
     numeroExterior: Optional[truncated_stp_str(10)] = None
     numeroInterior: Optional[truncated_stp_str(5)] = None
