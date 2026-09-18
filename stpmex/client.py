@@ -1,11 +1,13 @@
+import logging
+import os
 import re
 from typing import Any, ClassVar, Dict, List, NoReturn, Union
-import logging
+
 from cryptography.exceptions import UnsupportedAlgorithm
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from requests import Response, Session
-import os
+
 from .exc import (
     AccountDoesNotExist,
     BankCodeClabeMismatch,
@@ -140,7 +142,9 @@ def _raise_description_error_exc(resp: Dict) -> NoReturn:
         raise ClaveRastreoAlreadyInUse(**resp['resultado'])
     elif id == -7 and re.match(r'La cuenta .+ no existe', error):
         raise AccountDoesNotExist(**resp['resultado'])
-    elif id == -9 and re.match(r'La Institucion \d+ no es valida', error):
+    elif id in {-9, -53} and re.match(
+        r'La Institucion \d+ no es valida', error
+    ):
         raise InvalidInstitution(**resp['resultado'])
     elif id == -11 and re.match(r'El tipo de cuenta \d+ es invalido', error):
         raise InvalidAccountType(**resp['resultado'])

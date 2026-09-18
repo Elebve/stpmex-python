@@ -1,7 +1,7 @@
 import pytest
 from requests import HTTPError
 
-from stpmex.client import Client
+from stpmex.client import Client, _raise_description_error_exc
 from stpmex.exc import (
     AccountDoesNotExist,
     BankCodeClabeMismatch,
@@ -104,6 +104,11 @@ def test_incorrect_passphrase():
             InvalidInstitution,
         ),
         (
+            _desc_error('La Institucion 90638 no es valida', -53),
+            ORDEN_PAGO_ENDPOINT,
+            InvalidInstitution,
+        ),
+        (
             _desc_error('El tipo de cuenta 3 es invalido', -11),
             ORDEN_PAGO_ENDPOINT,
             InvalidAccountType,
@@ -189,6 +194,12 @@ def test_errors(
     exc = exc_info.value
     assert repr(exc)
     assert str(exc)
+
+
+def test_invalid_institution_id_minus_53() -> None:
+    resp = _desc_error('La Institucion 90638 no es valida', -53)
+    with pytest.raises(InvalidInstitution):
+        _raise_description_error_exc(resp)
 
 
 @pytest.mark.vcr

@@ -12,7 +12,10 @@ from pydantic.validators import (
     str_validator,
 )
 
+from stpmex.banks import sync_clabe_catalog
 from stpmex.exc import BlockedInstitutionError
+
+sync_clabe_catalog()
 
 if TYPE_CHECKING:
     from pydantic.typing import CallableGenerator

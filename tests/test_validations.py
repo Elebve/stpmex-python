@@ -1,5 +1,7 @@
 import clabe
 import pytest
+from clabe import generate_new_clabes
+from clabe.types import Clabe
 from pydantic import ValidationError
 
 from stpmex.resources import Orden
@@ -157,3 +159,21 @@ def test_invalid_card_number_cuenta_beneficiario():
     error = errors[2]
     assert error['loc'] == ('cuentaBeneficiario',)
     assert error['type'] == 'value_error.any_str.max_length'
+
+
+def test_nubank_institucion_actualizada():
+    orden = create_orden(institucionContraparte='40638')
+    assert orden.institucionContraparte == '40638'
+
+
+def test_nubank_codigo_legacy_se_migra_a_40638():
+    orden = create_orden(institucionContraparte='90638')
+    assert orden.institucionContraparte == '40638'
+
+
+def test_clabe_nu_usa_codigo_banxico_nuevo():
+    clabe_nu = generate_new_clabes(1, '638180000')[0]
+    cuenta = Clabe(clabe_nu)
+    assert cuenta.bank_code_banxico == '40638'
+    assert '90638' not in clabe.BANKS.values()
+    assert '40638' in clabe.BANKS.values()
