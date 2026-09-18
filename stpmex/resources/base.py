@@ -19,7 +19,7 @@ class Resource:
         https://stpmex.zendesk.com/hc/es/articles/360002796012-Firmas-Electr%C3%B3nicas-
         """
         joined_fields = join_fields(self, self._firma_fieldnames)
-        return compute_signature(joined_fields, self._client.STP_KEY)
+        return compute_signature(joined_fields, self._signing_key())
 
     @classmethod
     def _firma_consulta(cls, consulta: Dict[str, Any]):
@@ -31,7 +31,11 @@ class Resource:
             f"{consulta.get('institucionOperante', '')}"
             f"||||||||||||||||||||||||||||||"
         )
-        return compute_signature(joined, cls._client.STP_KEY)
+        return compute_signature(joined, cls._signing_key())
+
+    @classmethod
+    def _signing_key(cls):
+        return getattr(cls._client, 'pkey', None) or cls._client.STP_KEY
 
     def to_dict(self) -> Dict[str, Any]:
         base = dict()

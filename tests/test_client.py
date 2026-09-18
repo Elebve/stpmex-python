@@ -11,6 +11,7 @@ from stpmex.exc import (
     InvalidAmount,
     InvalidField,
     InvalidInstitution,
+    InvalidPassphrase,
     InvalidRfcOrCurp,
     InvalidTrackingKey,
     MandatoryField,
@@ -54,16 +55,15 @@ def _desc_error(desc, id):
 
 @pytest.mark.vcr
 def test_forbidden_without_vpn(client):
-    client = Client('TAMIZI', PKEY, demo=False)
+    client = Client('TAMIZI', PKEY, '12345678', demo=False)
     with pytest.raises(HTTPError) as exc_info:
         client.request('get', '/application.wadl', {})
     assert exc_info.value.response.status_code == 403
 
 
 def test_incorrect_passphrase():
-    pytest.skip(
-        'La firma ahora usa Azure Key Vault; el passphrase PEM ya no aplica.'
-    )
+    with pytest.raises(InvalidPassphrase):
+        Client('TAMIZI', PKEY, 'incorrect')
 
 
 @pytest.mark.parametrize(
@@ -204,7 +204,7 @@ def test_invalid_institution_id_minus_53() -> None:
 
 @pytest.mark.vcr
 def test_account_registration(client) -> None:
-    client = Client('TAMIZI', PKEY, demo=True)
+    client = Client('TAMIZI', PKEY, '12345678')
     response = client.put(CUENTA_ENDPOINT, dict(firma='{hola}'))
     assert response['id'] == 0
     assert response['descripcion'] == 'Cuenta en revisión.'

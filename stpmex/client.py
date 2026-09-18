@@ -1,8 +1,11 @@
 import logging
 import os
 import re
-from typing import Any, ClassVar, Dict, List, NoReturn, Union
+from typing import Any, ClassVar, Dict, List, NoReturn, Optional, Union
 
+from cryptography.exceptions import UnsupportedAlgorithm
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
 from requests import Response, Session
 
 from .exc import (
@@ -14,6 +17,7 @@ from .exc import (
     InvalidAmount,
     InvalidField,
     InvalidInstitution,
+    InvalidPassphrase,
     InvalidRfcOrCurp,
     InvalidTrackingKey,
     MandatoryField,
@@ -47,6 +51,7 @@ class Client:
         self,
         empresa: str,
         STP_KEY: str = os.environ.get('STP_KEY'),
+        passphrase: Optional[str] = None,
         demo: bool = False,
         base_url: str = None,
         soap_url: str = None,
@@ -67,8 +72,23 @@ class Client:
         )
         logging.debug(f'stpmex Client STP_KEY {STP_KEY}')
         self.STP_KEY = STP_KEY
+        self.pkey = self._load_pem_key(STP_KEY, passphrase)
         Resource.empresa = empresa
         Resource._client = self
+
+    @staticmethod
+    def _load_pem_key(stp_key: Optional[str], passphrase: Optional[str]):
+        if not stp_key or 'BEGIN' not in stp_key:
+            return None
+        encoded_pass = passphrase.encode('ascii') if passphrase else None
+        try:
+            return serialization.load_pem_private_key(
+                stp_key.encode('utf-8'),
+                encoded_pass,
+                default_backend(),
+            )
+        except (ValueError, TypeError, UnsupportedAlgorithm):
+            raise InvalidPassphrase
 
     def post(
         self, endpoint: str, data: Dict[str, Any]

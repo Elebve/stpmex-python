@@ -1,7 +1,3 @@
-import os
-
-import pytest
-
 from stpmex.auth import (
     CUENTA_FIELDNAMES,
     ORDEN_FIELDNAMES,
@@ -25,17 +21,11 @@ def test_join_fields_for_cuenta(cuenta_persona_fisica):
     assert join_fields(cuenta_persona_fisica, CUENTA_FIELDNAMES) == joined
 
 
-@pytest.mark.skipif(
-    not os.environ.get('VAULT_URL'),
-    reason='compute_signature requiere Azure Key Vault',
-)
 def test_compute_signature(client, orden):
     firma = (
         'KDNKDVVuyNt9oTXPAlofGXGH5L5IH9PAzOsx0JZFtmGlU+10QRf2RHSg0OVCnYYpu5sC3'
         'DJ6vlXuYM40+uNw0tMc0y8Dv26uO8Vv2GhOhMqaGk72LwgwgmqVg17xzjgGbJHzAzMav3'
         'fx4/3No+mSnf7vxpe4ePf6yK1yU5U28L4='
     )
-    sig = compute_signature(
-        join_fields(orden, ORDEN_FIELDNAMES), client.STP_KEY
-    )
+    sig = compute_signature(join_fields(orden, ORDEN_FIELDNAMES), client.pkey)
     assert sig == firma

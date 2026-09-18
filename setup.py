@@ -28,7 +28,7 @@ setup(
     description='Client library for stpmex.com',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/cuenca-mx/stpmex-python',
+    url='https://github.com/Elebve/stpmex-python',
     packages=find_packages(),
     include_package_data=True,
     package_data=dict(stpmex=['py.typed']),

@@ -3,11 +3,14 @@ import hashlib
 import logging
 import os
 from enum import Enum
-from typing import List
+from typing import List, Union
 
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.keys import KeyClient
 from azure.keyvault.keys.crypto import CryptographyClient, SignatureAlgorithm
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
+from cryptography.hazmat.primitives.hashes import SHA256
 
 VAULT_URL = os.environ.get('VAULT_URL')
 
@@ -58,7 +61,7 @@ ORDEN_FIELDNAMES = """
 SIGN_DIGEST = 'RSA-SHA256'
 
 
-def join_fields(obj: 'Resource', fieldnames: List[str]) -> bytes:  # noqa: F821
+def join_fields(obj: 'Resource', fieldnames: List[str]) -> str:  # noqa: F821
     joined_fields = []
     for field in fieldnames:
         value = getattr(obj, field, None)
@@ -74,13 +77,24 @@ def join_fields(obj: 'Resource', fieldnames: List[str]) -> bytes:  # noqa: F821
     return output
 
 
-def compute_signature(text: str, STP_KEY=os.environ.get('STP_KEY')) -> str:
+def compute_signature(
+    text: str, key: Union[str, RSAPrivateKey, None] = None
+) -> str:
+    if isinstance(key, RSAPrivateKey):
+        signature = key.sign(
+            text.encode('utf-8'),
+            padding.PKCS1v15(),
+            SHA256(),
+        )
+        return base64.b64encode(signature).decode('ascii')
+    return _sign_with_azure(text, key or os.environ.get('STP_KEY'))
+
+
+def _sign_with_azure(text: str, stp_key: str) -> str:
     credential = DefaultAzureCredential()
     key_client = KeyClient(vault_url=VAULT_URL, credential=credential)
-    key = key_client.get_key(STP_KEY)
+    key = key_client.get_key(stp_key)
     crypto_client = CryptographyClient(key, credential=credential)
-    sha = hashlib.sha256(text.encode())
-    digest = sha.digest()
+    digest = hashlib.sha256(text.encode()).digest()
     result = crypto_client.sign(SignatureAlgorithm.rs256, digest)
-    signature_text = str(base64.b64encode(result.signature).decode())
-    return signature_text
+    return str(base64.b64encode(result.signature).decode())

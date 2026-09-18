@@ -1,17 +1,13 @@
-# STP python3.6+ client library
+# STP python3.9+ client library
 
 
-[![test](https://github.com/cuenca-mx/stpmex-python/workflows/test/badge.svg)](https://github.com/cuenca-mx/stpmex-python/actions?query=workflow%3Atest)
-[![codecov](https://codecov.io/gh/cuenca-mx/stpmex-python/branch/main/graph/badge.svg)](https://codecov.io/gh/cuenca-mx/stpmex-python)
-[![PyPI](https://img.shields.io/pypi/v/stpmex.svg)](https://pypi.org/project/stpmex/)
-[![Downloads](https://pepy.tech/badge/stpmex)](https://pepy.tech/project/stpmex)
-
-Cliente para el servicio REST de STP
+Cliente REST de STP (fork de Atria). El catálogo de bancos sale de
+[Elebve/clabe-python](https://github.com/Elebve/clabe-python).
 
 
 ## Requerimientos
 
-Python v3.6 o superior.
+Python 3.9 o superior.
 
 ## Documentación de API
 
@@ -21,8 +17,36 @@ Python v3.6 o superior.
 ## Instalación
 
 ```
-pip install stpmex
+pip install git+https://github.com/Elebve/stpmex-python.git
 ```
+
+Esto instala también el fork de CLABE con el catálogo actualizado de Banxico
+(Nubank `40638`, etc.).
+
+## Firma
+
+Por defecto Atria firma con Azure Key Vault. Define `VAULT_URL` y el nombre
+de la llave en `STP_KEY`:
+
+```python
+from stpmex import Client
+
+client = Client(empresa='TU_EMPRESA')  # STP_KEY sale del entorno
+```
+
+También puedes firmar con un PEM local (útil en pruebas):
+
+```python
+client = Client(
+    empresa='TU_EMPRESA',
+    STP_KEY=pem,
+    passphrase='tu-passphrase',
+    demo=True,
+)
+```
+
+El código de institución legado `90638` (Nu Sofipo) se envía como `40638`
+(Nubank), que es el que STP acepta hoy.
 
 ## Correr pruebas
 
@@ -63,7 +87,7 @@ cuenta_persona_moral = client.cuentas_morales.alta(
     rfcCurp='ABC200101AB0',
 )
 
-# Si deseas dar de alta una nueva clabe para la misma 
+# Si deseas dar de alta una nueva clabe para la misma
 # razón social, haces el mismo request sustituyendo `cuenta`
 # con la nueva clabe
 cuenta_persona_moral = client.cuentas_morales.alta(
@@ -76,7 +100,7 @@ cuenta_persona_moral = client.cuentas_morales.alta(
 
 orden = client.ordenes.registra(
     monto=1.2,
-    cuentaOrdenante=cuenta.cuenta,
+    cuentaOrdenante=cuenta_persona_fisica.cuenta,
     nombreBeneficiario='Ricardo Sanchez',
     cuentaBeneficiario='072691004495711499',
     institucionContraparte='40072',
@@ -87,7 +111,7 @@ orden = client.ordenes.registra(
 saldo = client.saldos.consulta(cuenta='646456789123456789')
 
 # Ordenes - enviadas
-enviadas = client.ordenes.consulta_enviadas() # fecha_operacion es el día de hoy
+enviadas = client.ordenes.consulta_enviadas()  # fecha_operacion es el día de hoy
 
 # Ordenes - recibidas
 recibidas = client.ordenes.consulta_recibidas(

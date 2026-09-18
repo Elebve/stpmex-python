@@ -34,7 +34,7 @@ uzF/x9tl2+BdiDjPOhSRuoa1ypilODdpOGKNKuf0vu2jAbbzDILBYOfw
 @pytest.fixture
 def client():
     empresa = 'TAMIZI'
-    yield Client(empresa, PKEY, demo=True)
+    yield Client(empresa, PKEY, '12345678', demo=True)
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def client_mock(request):
 
     with requests_mock.mock() as m:
         m.put(requests_mock.ANY, json=request.param)
-        yield Client(empresa, PKEY, demo=True)
+        yield Client(empresa, PKEY, '12345678', demo=True)
 
 
 @pytest.fixture
